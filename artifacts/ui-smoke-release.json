@@ -1,7 +1,7 @@
 {
   "configuration": "Release",
   "executable": "D:\\Project\\과제\\bin\\x64\\Release\\Circumcircle.exe",
-  "started_utc": "2026-09-08T23:44:40.914073+00:00",
+  "started_utc": "2026-09-09T00:14:47.836481+00:00",
   "method": "ctypes Win32 messages against the real MFC process; hidden launch",
   "offscreen_paint_enabled": true,
   "message_timeout_ms": 100,
@@ -21,7 +21,7 @@
     {
       "name": "click_and_drag",
       "passed": true,
-      "elapsed_seconds": 0.0548,
+      "elapsed_seconds": 0.0505,
       "details": {
         "click_points": [
           [
@@ -76,7 +76,7 @@
     {
       "name": "input_isolation_and_capture",
       "passed": true,
-      "elapsed_seconds": 0.0704,
+      "elapsed_seconds": 0.0643,
       "details": {
         "clamped_drag_point": [
           0,
@@ -87,7 +87,7 @@
     {
       "name": "collinear_points",
       "passed": true,
-      "elapsed_seconds": 0.0206,
+      "elapsed_seconds": 0.0204,
       "details": {
         "points": [
           [
@@ -109,7 +109,7 @@
     {
       "name": "numeric_validation",
       "passed": true,
-      "elapsed_seconds": 0.2244,
+      "elapsed_seconds": 0.2161,
       "details": {
         "invalid_inputs": [
           {
@@ -195,208 +195,208 @@
         "events": [
           {
             "step": 1,
-            "elapsed_seconds": 0.5206,
+            "elapsed_seconds": 0.5204,
             "points": [
               [
-                397,
-                266
+                887,
+                194
               ],
               [
-                410,
-                352
+                375,
+                62
               ],
               [
-                319,
-                471
+                105,
+                67
               ]
             ]
           },
           {
             "step": 2,
-            "elapsed_seconds": 1.0172,
+            "elapsed_seconds": 1.0173,
             "points": [
               [
-                864,
-                73
+                742,
+                216
               ],
               [
-                565,
-                413
+                752,
+                336
               ],
               [
-                853,
-                408
+                407,
+                49
               ]
             ]
           },
           {
             "step": 3,
-            "elapsed_seconds": 1.5159,
+            "elapsed_seconds": 1.5144,
             "points": [
               [
-                284,
-                225
+                45,
+                472
               ],
               [
-                212,
-                541
+                299,
+                433
               ],
               [
-                665,
-                134
+                145,
+                199
               ]
             ]
           },
           {
             "step": 4,
-            "elapsed_seconds": 2.0146,
+            "elapsed_seconds": 2.0136,
             "points": [
               [
-                895,
-                229
+                339,
+                98
               ],
               [
-                389,
-                367
+                918,
+                601
               ],
               [
-                232,
-                624
+                133,
+                140
               ]
             ]
           },
           {
             "step": 5,
-            "elapsed_seconds": 2.513,
+            "elapsed_seconds": 2.5303,
             "points": [
               [
-                271,
-                402
+                423,
+                167
               ],
               [
-                264,
-                557
+                845,
+                15
               ],
               [
-                219,
-                54
+                20,
+                203
               ]
             ]
           },
           {
             "step": 6,
-            "elapsed_seconds": 3.0111,
+            "elapsed_seconds": 3.024,
             "points": [
               [
-                641,
-                364
+                567,
+                92
               ],
               [
-                629,
-                597
+                306,
+                497
               ],
               [
-                159,
-                331
+                77,
+                65
               ]
             ]
           },
           {
             "step": 7,
-            "elapsed_seconds": 3.5087,
+            "elapsed_seconds": 3.5192,
             "points": [
               [
-                676,
-                160
+                113,
+                489
               ],
               [
-                698,
-                108
+                744,
+                57
               ],
               [
-                134,
-                587
+                733,
+                302
               ]
             ]
           },
           {
             "step": 8,
-            "elapsed_seconds": 4.0241,
+            "elapsed_seconds": 4.0142,
             "points": [
               [
-                435,
-                103
+                108,
+                380
               ],
               [
-                275,
-                476
+                492,
+                233
               ],
               [
-                188,
-                512
+                557,
+                71
               ]
             ]
           },
           {
             "step": 9,
-            "elapsed_seconds": 4.5176,
+            "elapsed_seconds": 4.5274,
             "points": [
               [
-                368,
-                421
+                491,
+                231
               ],
               [
-                102,
-                301
+                383,
+                392
               ],
               [
-                638,
-                404
+                603,
+                102
               ]
             ]
           },
           {
             "step": 10,
-            "elapsed_seconds": 5.0128,
+            "elapsed_seconds": 5.022,
             "points": [
               [
-                263,
-                155
+                700,
+                486
               ],
               [
-                650,
-                509
+                653,
+                167
               ],
               [
-                486,
-                146
+                79,
+                250
               ]
             ]
           }
         ],
         "interval_seconds": [
-          0.5206,
-          0.4966,
-          0.4987,
-          0.4987,
-          0.4984,
-          0.4981,
-          0.4976,
-          0.5154,
-          0.4935,
-          0.4952
+          0.5204,
+          0.4969,
+          0.4971,
+          0.4992,
+          0.5167,
+          0.4937,
+          0.4952,
+          0.495,
+          0.5132,
+          0.4946
         ],
-        "responsiveness_samples": 243,
-        "maximum_wm_null_ms": 4.71,
+        "responsiveness_samples": 244,
+        "maximum_wm_null_ms": 4.693,
         "extra_step_observation_seconds": 0.7
       }
     },
     {
       "name": "reset_during_random",
       "passed": true,
-      "elapsed_seconds": 1.9294,
+      "elapsed_seconds": 1.9293,
       "details": {
-        "reset_elapsed_ms": 5.001,
+        "reset_elapsed_ms": 4.374,
         "stale_update_observation_seconds": 0.8,
         "restart_verified": true
       }
@@ -404,14 +404,14 @@
     {
       "name": "close_during_random",
       "passed": true,
-      "elapsed_seconds": 0.6349,
+      "elapsed_seconds": 0.6251,
       "details": {
         "exit_code": 2,
         "idle_exit_code": 2,
-        "close_elapsed_ms": 14.46
+        "close_elapsed_ms": 12.858
       }
     }
   ],
   "passed": true,
-  "elapsed_seconds": 8.7737
+  "elapsed_seconds": 8.9106
 }

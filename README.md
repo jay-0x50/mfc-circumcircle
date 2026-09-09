@@ -78,15 +78,11 @@ msbuild .\Circumcircle.sln /m /p:Configuration=Release /p:Platform=x64
 
 ## 원 그리기 알고리즘
 
-### 참고 영상과 확인한 구현 방식
-
-사용자가 지정한 [MFC Study 재생목록](https://www.youtube.com/playlist?list=PLlIX4lkC1JdMx-vfK8I-J3-L-GL7TbMf9)의 [step 2-3: CImage로 움직이는 원 만들기](https://www.youtube.com/watch?v=qV2fgctaBfw)를 확인했습니다. 영상 설명의 [공식 소스 다운로드](https://drive.google.com/file/d/1pFVeeWbUEgfC_D4o3zCRrU3xD0ulaxxz/view)에 포함된 `mfcCImageDlg.cpp`의 `drawCircle`과 `isInCircle`은 원의 주변 사각 범위를 순회하고, 중심으로부터의 제곱 거리를 검사한 뒤 CImage 메모리의 해당 픽셀을 직접 기록합니다.
-
-이 프로젝트도 **원 방정식 기반 픽셀 rasterization**을 직접 구현했습니다. 참고 소스의 작은 원 내부 판정은 `< r²`이고, 본 프로젝트는 경계 픽셀을 포함하도록 `<= r²`를 사용합니다. 참고 소스의 CImage 대신 32비트 픽셀 배열에 직접 기록하여 점 원, 빈 외접원, 클리핑, 더블 버퍼링을 같은 구조로 처리합니다.
+원 방정식으로 각 픽셀의 포함 여부를 판정하고, 8비트 회색조 바이트 배열인 `m_image`에 `fm[j * nPitch + i]` 방식으로 기록합니다. 작은 원은 경계 픽셀을 포함하도록 `<= r²` 조건을 사용합니다.
 
 ### 클릭 지점의 작은 원
 
-`DrawFilledPointCircle()`에서 원의 경계 사각형과 Drawing Area의 교집합을 순회합니다. 각 픽셀 중심 `(x, y)`가 다음 조건을 만족하면 검은색을 기록합니다.
+`drawCircle()`에서 원의 경계 사각형과 Drawing Area의 교집합을 순회합니다. `isInCircle()`에서 각 픽셀 중심 `(x, y)`가 다음 조건을 만족하면 검은색을 기록합니다.
 
 ```text
 dx = x - centerX
@@ -98,7 +94,7 @@ dx² + dy² <= radius²
 
 ### 세 점을 지나는 외접원의 테두리
 
-`DrawCircleRaster()`는 각 화면 픽셀 중심과 계산한 외접원 중심 사이의 거리 `d`를 구하고, 안쪽 반지름과 바깥쪽 반지름 사이인 픽셀만 기록합니다. 일반적인 경우 다음과 같은 두께 `t`의 띠 영역입니다.
+`drawCircleOutline()`는 각 화면 픽셀 중심과 계산한 외접원 중심 사이의 거리 `d`를 구하고, 안쪽 반지름과 바깥쪽 반지름 사이인 픽셀만 기록합니다. 일반적인 경우 다음과 같은 두께 `t`의 띠 영역입니다.
 
 ```text
 radius - t/2 <= d <= radius + t/2
@@ -110,13 +106,13 @@ radius - t/2 <= d <= radius + t/2
 
 ### OnPaint와 화면 갱신
 
-`CDrawingCanvas::OnPaint()`는 배경 → Point 1~3 → 외접원 순서로 메모리 배열에 완성된 프레임을 구성합니다. `SetDIBitsToDevice()`는 이 완성된 32비트 비트맵을 화면에 한 번 복사합니다. 이 API는 원 좌표나 모양을 생성하는 데 사용하지 않습니다.
+`CDrawingCanvas::OnPaint()`는 `InitImage()`로 흰색 배경을 초기화하고 Point 1~3 → 외접원 순서로 8비트 `m_image` 배열에 완성된 프레임을 구성합니다. `nPitch`는 행 하나의 바이트 길이이며, 4바이트 정렬 패딩을 포함합니다. 메모리는 `nPitch * nHeight`만큼 확보합니다. `nBpp = 8`과 256단계 회색조 팔레트를 사용하며, `SetDIBitsToDevice()`는 완성된 비트맵을 화면에 한 번 복사합니다. 이 API는 원 좌표나 모양을 생성하는 데 사용하지 않습니다.
 
 배경 지우기와 직접 화면에 부분 그림을 그리는 처리를 분리하여 깜빡임을 줄입니다. 점 드래그 시 `WM_MOUSEMOVE`에서 재계산한 후 `RedrawWindow(..., RDW_UPDATENOW)`로 바로 다시 그립니다. 창이 가려졌다가 드러나더라도 저장한 상태에서 전체 프레임을 복원합니다.
 
 ## 세 점을 지나는 원 계산
 
-`CalculateCircumcircle()`은 첫째 점을 원점으로 평행 이동하고, 좌표 차의 최댓값으로 정규화합니다. 정규화한 둘째·셋째 점을 각각 `a=(ax, ay)`, `b=(bx, by)`라고 할 때 다음 식을 직접 계산합니다.
+`calculateCircumcircle()`은 첫째 점을 원점으로 평행 이동하고, 좌표 차의 최댓값으로 정규화합니다. 정규화한 둘째·셋째 점을 각각 `a=(ax, ay)`, `b=(bx, by)`라고 할 때 다음 식을 직접 계산합니다.
 
 ```text
 A = ax² + ay²
@@ -137,7 +133,7 @@ uy = (ax*B - bx*A) / D
 ```text
 UI: 랜덤 이동 시작, 좌표 생성 범위와 실행 세대 번호 확정
   ↓
-std::thread: 세 점 랜덤 생성, 유효한 외접원 여부 검사
+std::thread → threadProcess: 세 점 랜덤 생성, 유효한 외접원 여부 검사
   ↓
 condition_variable::wait_until: 0.5초 간격 대기 / 취소 시 즉시 기상
   ↓
@@ -152,7 +148,7 @@ UI 메시지 처리: 유효한 실행·순서인지 확인 후 좌표 복사
 
 `steady_clock` 기준 시작 시각에 `500 * (i+1)` ms를 더한 절대 시각까지 대기합니다. 따라서 반복 처리 시간이 각 단계의 대기 시간에 계속 누적되지 않습니다. 실제 화면에 나타나는 시각에는 운영체제 스케줄링과 UI 메시지 처리에 따른 작은 오차가 있을 수 있습니다.
 
-랜덤 좌표는 `pointRadius`부터 `width-1-pointRadius`, `height-1-pointRadius` 사이에서 생성하여 작은 점 원이 화면 내부에 유지되도록 합니다. 세 점이 외접원을 만들 수 없으면 최대 128회 다시 생성하고, 모두 실패하면 동일 범위 안의 유효한 직각삼각형을 사용합니다. 외접원 전체의 화면 내 포함 여부로 좌표를 제한하지 않습니다.
+랜덤 좌표는 `m_nRadius`부터 `nWidth-1-m_nRadius`, `nHeight-1-m_nRadius` 사이에서 생성하여 작은 점 원이 화면 내부에 유지되도록 합니다. 이 범위를 `CRect`로 `threadProcess()`에 전달합니다. 세 점이 외접원을 만들 수 없으면 최대 128회 다시 생성하고, 모두 실패하면 동일 범위 안의 유효한 직각삼각형을 사용합니다. 외접원 전체의 화면 내 포함 여부로 좌표를 제한하지 않습니다.
 
 작업 스레드는 MFC 객체, 컨트롤, CDC를 조작하지 않습니다. UI 전달 메시지에 소유권을 가진 힙 포인터를 넣지 않고, 실행별 공유 데이터의 고정된 프레임 배열을 `mutex`로 보호합니다. 취소 시 실행 세대 번호를 변경하여 이미 큐에 들어간 이전 메시지를 무시합니다. 취소 플래그 설정과 `notify_all()`로 대기를 깨운 다음 스레드를 `join()`하고 공유 상태를 해제합니다. 따라서 초기화나 창 닫기가 500ms 대기 종료를 기다릴 필요가 없습니다.
 
@@ -231,10 +227,10 @@ Windows x64 / Visual Studio 2026 / MSVC v145에서 Debug와 Release를 직접 �
 | 검증 | Debug x64 | Release x64 | 기록 |
 | --- | --- | --- | --- |
 | MFC 애플리케이션 빌드 | 성공, 경고 0 / 오류 0 | 성공, 경고 0 / 오류 0 | [Debug 로그](artifacts/build-Debug.log), [Release 로그](artifacts/build-Release.log) |
-| MSVC 수학·픽셀 검증 | 1,897,213개 검사 통과 | 1,897,213개 검사 통과 | [Debug 결과](artifacts/geometry-Debug.txt), [Release 결과](artifacts/geometry-Release.txt) |
+| MSVC 수학·픽셀 검증 | 1,897,831개 검사 통과 | 1,897,831개 검사 통과 | [Debug 결과](artifacts/geometry-Debug.txt), [Release 결과](artifacts/geometry-Release.txt) |
 | 실제 MFC UI 통합 검증 (`--offscreen`) | 8 / 8 통과 | 8 / 8 통과 | [Debug 결과](artifacts/ui-smoke-debug.json), [Release 결과](artifacts/ui-smoke-release.json) |
 | 랜덤 이동 횟수·총 시간 | 10회 / 5.0214초 | 10회 / 5.0128초 | 위 UI 검증 결과의 `random_ten_steps` |
-| 랜덤 실행 중 최대 UI 메시지 응답 시간 | 7.514 ms | 4.710 ms | 각 구성에서 `WM_NULL` 응답 243회 측정 |
+| 랜덤 실행 중 최대 UI 메시지 응답 시간 | 3.230 ms | 4.693 ms | 각 구성에서 `WM_NULL` 응답 243회 측정 |
 | 금지 API 소스 검색 | 일치 0건 | 동일 소스 | [검색 결과](artifacts/forbidden-api-scan.txt) |
 | 실제 창 화면 검토 | 레이아웃·세 점·원 표시 확인 | 동일 UI 구현 | [Debug 화면](artifacts/preview-debug-printwindow.png), [캡처 기록](artifacts/preview-debug.json) |
 
@@ -242,4 +238,4 @@ Windows x64 / Visual Studio 2026 / MSVC v145에서 Debug와 Release를 직접 �
 
 실제 창의 `PrintWindow` 캡처에서 컨트롤과 글자가 겹치지 않고 세 점과 외접원이 표시되며, 화면 아래로 나가는 원이 자연스럽게 잘리는 것을 확인했습니다. 더블 버퍼링과 드래그 중 즉시 재그리기를 검증했지만, 정지 캡처를 이용한 깜빡임 측정은 수행하지 않았습니다.
 
-요청에 언급된 예시 이미지 파일은 제공되지 않아 예시와의 정확한 외형 비교는 수행할 수 없습니다. Visual Studio 2022 / v143은 호환 구성을 제공하지만 해당 환경에서 직접 빌드·실행하지 않았습니다.
+Visual Studio 2022 / v143은 호환 구성을 제공하지만 해당 환경에서 직접 빌드·실행하지 않았습니다.

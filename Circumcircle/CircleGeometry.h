@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 namespace geometry
 {
 struct Point
@@ -12,23 +10,26 @@ struct Point
 
 struct Circle
 {
-    double centerX = 0.0;
-    double centerY = 0.0;
-    double radius = 0.0;
+    double dCenterX = 0.0;
+    double dCenterY = 0.0;
+    double dRadius = 0.0;
 };
 
-// On failure, result is reset to an empty circle.
-bool CalculateCircumcircle(const Point& first, const Point& second,
-    const Point& third, Circle& result);
+// On failure, circleOut is reset to an empty circle.
+bool calculateCircumcircle(const Point& pt1, const Point& pt2,
+    const Point& pt3, Circle& circleOut);
 
-// Buffers are top down, tightly packed, with colors encoded as 0x00RRGGBB.
-// Integer coordinates denote pixel centers. Drawing is clipped to the buffer.
-void DrawFilledPointCircle(std::uint32_t* pixels, int width, int height,
-    const Point& center, int radius, std::uint32_t color);
+// Integer coordinates denote pixel centers. The boundary is included (<=).
+bool isInCircle(int i, int j, int nCenterX, int nCenterY, int nRadius);
+
+// Top-down 8-bit grayscale buffer: 0 = black, 255 = white. nPitch is the
+// positive row stride in bytes and must be at least nWidth. Padding is untouched.
+void drawCircle(unsigned char* fm, int nWidth, int nHeight, int nPitch,
+    const Point& ptCenter, int nRadius, int nGray);
 
 // The stroke is centered on the mathematical circumference where possible.
 // A hollow inner radius of min(radius, 1 pixel) is preserved; excess thickness
 // extends outward. The center and radius are never rounded or moved to fit.
-void DrawCircleRaster(std::uint32_t* pixels, int width, int height,
-    const Circle& circle, int thickness, std::uint32_t color);
+void drawCircleOutline(unsigned char* fm, int nWidth, int nHeight, int nPitch,
+    const Circle& circle, int nThickness, int nGray);
 }

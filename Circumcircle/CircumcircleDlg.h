@@ -19,13 +19,13 @@ protected:
     void OnOK() override;
     void OnCancel() override;
     afx_msg void OnDestroy();
-    afx_msg void ResetAll();
-    afx_msg void StartRandomMovement();
-    afx_msg void OnRadiusChanged();
-    afx_msg void OnThicknessChanged();
-    afx_msg void OnRadiusKillFocus();
-    afx_msg void OnThicknessKillFocus();
-    afx_msg LRESULT OnRandomMove(WPARAM generation, LPARAM frameIndex);
+    afx_msg void OnBnClickedBtnReset();
+    afx_msg void OnBnClickedBtnRandom();
+    afx_msg void OnEnChangeEditRadius();
+    afx_msg void OnEnChangeEditThickness();
+    afx_msg void OnEnKillfocusEditRadius();
+    afx_msg void OnEnKillfocusEditThickness();
+    afx_msg LRESULT OnRandomMove(WPARAM nRunId, LPARAM nFrameIndex);
     DECLARE_MESSAGE_MAP()
 
 private:
@@ -40,18 +40,22 @@ private:
 
     void UpdatePointCoordinateUI();
     void UpdateProgressUI();
+    void ResetAll();
+    void StartRandomMovement();
     void StopRandomMovement();
-    bool ReadPositiveInteger(int control, int maximum, int& value) const;
+    static void threadProcess(std::shared_ptr<RandomRun> pRun,
+        HWND hWnd, UINT_PTR nRunId, CRect rect);
+    bool ReadPositiveInteger(int nID, int nMax, int& nValue) const;
     void ApplyInputs();
-    void NormalizeInput(int control, int maximum, int previous);
+    void NormalizeInput(int nID, int nMax, int nPrevious);
 
     CDrawingCanvas m_canvas;
-    std::shared_ptr<RandomRun> m_randomRun;
-    std::thread m_worker;
-    UINT_PTR m_generation = 0;
-    int m_randomMoves = 0;
-    int m_pointRadius = 6;
-    int m_circleThickness = 2;
-    bool m_ready = false;
-    bool m_updatingInputs = false;
+    std::shared_ptr<RandomRun> m_pRandomRun;
+    std::thread m_thread;
+    UINT_PTR m_nRunId = 0;
+    int m_nMoveCount = 0;
+    int m_nRadius = 6;
+    int m_nThickness = 2;
+    bool m_bReady = false;
+    bool m_bUpdatingInputs = false;
 };

@@ -3,178 +3,198 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <limits>
 
 namespace
 {
-bool IsValidBuffer(const std::uint32_t* pixels, int width, int height)
+bool isValidBuffer(const unsigned char* fm, int nWidth, int nHeight,
+    int nPitch, int nGray)
 {
-    return pixels != nullptr && width > 0 && height > 0 &&
-        static_cast<std::size_t>(height) <=
+    return fm != nullptr && nWidth > 0 && nHeight > 0 && nPitch >= nWidth &&
+        nGray >= 0 && nGray <= 255 &&
+        static_cast<std::size_t>(nHeight) <=
             (std::numeric_limits<std::size_t>::max)() /
-            static_cast<std::size_t>(width);
+            static_cast<std::size_t>(nPitch);
 }
 }
 
 namespace geometry
 {
-bool CalculateCircumcircle(const Point& first, const Point& second,
-    const Point& third, Circle& result)
+bool calculateCircumcircle(const Point& pt1, const Point& pt2,
+    const Point& pt3, Circle& circleOut)
 {
-    result = {};
+    circleOut = {};
 
-    // Translate the first point to the origin to reduce cancellation. Cast
-    // before subtraction so even opposite extreme integer coordinates work.
-    const double deltaAX = static_cast<double>(second.x) - first.x;
-    const double deltaAY = static_cast<double>(second.y) - first.y;
-    const double deltaBX = static_cast<double>(third.x) - first.x;
-    const double deltaBY = static_cast<double>(third.y) - first.y;
-    const double coordinateScale = (std::max)({std::abs(deltaAX),
-        std::abs(deltaAY), std::abs(deltaBX), std::abs(deltaBY)});
-    if (coordinateScale == 0.0)
+    // Translate pt1 to the origin and normalize lengths to reduce cancellation.
+    // Cast before subtraction so opposite extreme int coordinates also work.
+    const double dDeltaAX = static_cast<double>(pt2.x) - pt1.x;
+    const double dDeltaAY = static_cast<double>(pt2.y) - pt1.y;
+    const double dDeltaBX = static_cast<double>(pt3.x) - pt1.x;
+    const double dDeltaBY = static_cast<double>(pt3.y) - pt1.y;
+    const double dCoordinateScale = (std::max)({std::abs(dDeltaAX),
+        std::abs(dDeltaAY), std::abs(dDeltaBX), std::abs(dDeltaBY)});
+    if (dCoordinateScale == 0.0)
     {
         return false;
     }
-    const double ax = deltaAX / coordinateScale;
-    const double ay = deltaAY / coordinateScale;
-    const double bx = deltaBX / coordinateScale;
-    const double by = deltaBY / coordinateScale;
-    const double aSquared = ax * ax + ay * ay;
-    const double bSquared = bx * bx + by * by;
-    const double cross = ax * by - ay * bx;
-    const double scaleSquared = (std::max)(aSquared, bSquared);
-    constexpr double relativeEpsilon = 1.0e-9;
+    const double dAX = dDeltaAX / dCoordinateScale;
+    const double dAY = dDeltaAY / dCoordinateScale;
+    const double dBX = dDeltaBX / dCoordinateScale;
+    const double dBY = dDeltaBY / dCoordinateScale;
+    const double dASquared = dAX * dAX + dAY * dAY;
+    const double dBSquared = dBX * dBX + dBY * dBY;
+    const double dCross = dAX * dBY - dAY * dBX;
+    const double dScaleSquared = (std::max)(dASquared, dBSquared);
+    constexpr double dRelativeEpsilon = 1.0e-9;
 
-    // Scale the determinant threshold with the input triangle, rather than
-    // imposing a maximum circle radius or requiring it to fit the viewport.
-    if (scaleSquared == 0.0 ||
-        std::abs(cross) <= relativeEpsilon * scaleSquared)
+    // This dimensionless determinant threshold rejects nearly straight
+    // triangles without imposing a screen bound or a maximum circle radius.
+    if (dScaleSquared == 0.0 ||
+        std::abs(dCross) <= dRelativeEpsilon * dScaleSquared)
     {
         return false;
     }
 
-    const double denominator = 2.0 * cross;
-    const double localCenterX =
-        ((aSquared * by - bSquared * ay) / denominator) * coordinateScale;
-    const double localCenterY =
-        ((ax * bSquared - bx * aSquared) / denominator) * coordinateScale;
+    const double dDenominator = 2.0 * dCross;
+    const double dLocalCenterX =
+        ((dASquared * dBY - dBSquared * dAY) / dDenominator) * dCoordinateScale;
+    const double dLocalCenterY =
+        ((dAX * dBSquared - dBX * dASquared) / dDenominator) * dCoordinateScale;
 
-    const Circle candidate{
-        first.x + localCenterX,
-        first.y + localCenterY,
-        std::hypot(localCenterX, localCenterY)
+    const Circle circleCandidate{
+        pt1.x + dLocalCenterX,
+        pt1.y + dLocalCenterY,
+        std::hypot(dLocalCenterX, dLocalCenterY)
     };
-    if (!std::isfinite(candidate.centerX) ||
-        !std::isfinite(candidate.centerY) ||
-        !std::isfinite(candidate.radius) || candidate.radius <= 0.0)
+    if (!std::isfinite(circleCandidate.dCenterX) ||
+        !std::isfinite(circleCandidate.dCenterY) ||
+        !std::isfinite(circleCandidate.dRadius) || circleCandidate.dRadius <= 0.0)
     {
         return false;
     }
 
-    result = candidate;
+    circleOut = circleCandidate;
     return true;
 }
 
-void DrawFilledPointCircle(std::uint32_t* pixels, int width, int height,
-    const Point& center, int radius, std::uint32_t color)
+bool isInCircle(int i, int j, int nCenterX, int nCenterY, int nRadius)
 {
-    if (!IsValidBuffer(pixels, width, height) || radius <= 0)
+    if (nRadius <= 0)
+    {
+        return false;
+    }
+    const std::int64_t nDeltaX = static_cast<std::int64_t>(i) - nCenterX;
+    const std::int64_t nDeltaY = static_cast<std::int64_t>(j) - nCenterY;
+    if (nDeltaX < -static_cast<std::int64_t>(nRadius) || nDeltaX > nRadius ||
+        nDeltaY < -static_cast<std::int64_t>(nRadius) || nDeltaY > nRadius)
+    {
+        return false;
+    }
+
+    // The lecture's circle equation, including the exact boundary. Widened
+    // integer arithmetic keeps the result exact even near the int limits.
+    return nDeltaX * nDeltaX + nDeltaY * nDeltaY <=
+        static_cast<std::int64_t>(nRadius) * nRadius;
+}
+
+void drawCircle(unsigned char* fm, int nWidth, int nHeight, int nPitch,
+    const Point& ptCenter, int nRadius, int nGray)
+{
+    if (!isValidBuffer(fm, nWidth, nHeight, nPitch, nGray) || nRadius <= 0)
     {
         return;
     }
 
-    // Clip before looping. 64-bit subtraction and squares prevent overflow
-    // for arbitrary int centers and radii; clipped offsets cannot exceed r.
-    const std::int64_t left = (std::max)(std::int64_t{0},
-        static_cast<std::int64_t>(center.x) - radius);
-    const std::int64_t top = (std::max)(std::int64_t{0},
-        static_cast<std::int64_t>(center.y) - radius);
-    const std::int64_t right = (std::min)(static_cast<std::int64_t>(width) - 1,
-        static_cast<std::int64_t>(center.x) + radius);
-    const std::int64_t bottom = (std::min)(static_cast<std::int64_t>(height) - 1,
-        static_cast<std::int64_t>(center.y) + radius);
-    if (left > right || top > bottom)
+    const int nCenterX = ptCenter.x;
+    const int nCenterY = ptCenter.y;
+    // Clip before looping. Widen before subtracting so arbitrary int centers
+    // and radii are safe, including disks completely outside the drawing area.
+    const std::int64_t nLeft = (std::max)(std::int64_t{0},
+        static_cast<std::int64_t>(nCenterX) - nRadius);
+    const std::int64_t nTop = (std::max)(std::int64_t{0},
+        static_cast<std::int64_t>(nCenterY) - nRadius);
+    const std::int64_t nRight = (std::min)(static_cast<std::int64_t>(nWidth) - 1,
+        static_cast<std::int64_t>(nCenterX) + nRadius);
+    const std::int64_t nBottom = (std::min)(static_cast<std::int64_t>(nHeight) - 1,
+        static_cast<std::int64_t>(nCenterY) + nRadius);
+    if (nLeft > nRight || nTop > nBottom)
     {
         return;
     }
 
-    const std::int64_t radiusSquared =
-        static_cast<std::int64_t>(radius) * radius;
-    for (int y = static_cast<int>(top); y <= static_cast<int>(bottom); ++y)
+    // size_t row/column indices keep j * nPitch safe for large valid buffers.
+    for (std::size_t j = static_cast<std::size_t>(nTop);
+        j <= static_cast<std::size_t>(nBottom); ++j)
     {
-        const std::int64_t dy = static_cast<std::int64_t>(y) - center.y;
-        auto* row = pixels + static_cast<std::size_t>(y) * width;
-        for (int x = static_cast<int>(left); x <= static_cast<int>(right); ++x)
+        for (std::size_t i = static_cast<std::size_t>(nLeft);
+            i <= static_cast<std::size_t>(nRight); ++i)
         {
-            const std::int64_t dx = static_cast<std::int64_t>(x) - center.x;
-            if (dx * dx + dy * dy <= radiusSquared)
+            if (isInCircle(static_cast<int>(i), static_cast<int>(j),
+                nCenterX, nCenterY, nRadius))
             {
-                row[x] = color;
+                fm[j * nPitch + i] = static_cast<unsigned char>(nGray);
             }
         }
     }
 }
 
-void DrawCircleRaster(std::uint32_t* pixels, int width, int height,
-    const Circle& circle, int thickness, std::uint32_t color)
+void drawCircleOutline(unsigned char* fm, int nWidth, int nHeight, int nPitch,
+    const Circle& circle, int nThickness, int nGray)
 {
-    if (!IsValidBuffer(pixels, width, height) || thickness <= 0 ||
-        !std::isfinite(circle.centerX) || !std::isfinite(circle.centerY) ||
-        !std::isfinite(circle.radius) || circle.radius <= 0.0)
+    if (!isValidBuffer(fm, nWidth, nHeight, nPitch, nGray) || nThickness <= 0 ||
+        !std::isfinite(circle.dCenterX) || !std::isfinite(circle.dCenterY) ||
+        !std::isfinite(circle.dRadius) || circle.dRadius <= 0.0)
     {
         return;
     }
 
-    const double halfThickness = thickness * 0.5;
-    // Keep the interior hollow even when the requested thickness exceeds the
-    // diameter. In that case shift the extra stroke outward, without moving
-    // the mathematical circle or dropping any of its circumference.
-    const double minimumInnerRadius = (std::min)(circle.radius, 1.0);
-    const double innerOffset = (std::max)(-halfThickness,
-        minimumInnerRadius - circle.radius);
-    const double outerOffset = innerOffset + thickness;
-    const double originDistance = std::hypot(circle.centerX, circle.centerY);
-    const double viewportDiagonal = std::hypot(width - 1.0, height - 1.0);
-    const double originOffset = originDistance - circle.radius;
+    const double dHalfThickness = nThickness * 0.5;
+    // Preserve a hollow interior when the stroke exceeds the diameter by
+    // shifting the extra thickness outward. Keep the true circumference.
+    const double dMinimumInnerRadius = (std::min)(circle.dRadius, 1.0);
+    const double dInnerOffset = (std::max)(-dHalfThickness,
+        dMinimumInnerRadius - circle.dRadius);
+    const double dOuterOffset = dInnerOffset + nThickness;
+    const double dOriginDistance = std::hypot(circle.dCenterX, circle.dCenterY);
+    const double dViewportDiagonal = std::hypot(nWidth - 1.0, nHeight - 1.0);
+    const double dOriginOffset = dOriginDistance - circle.dRadius;
 
-    // The reverse triangle inequality quickly rejects wholly invisible
-    // strokes. No radius-dependent loop can stall the UI for a huge circle.
-    if (!std::isfinite(originDistance) ||
-        std::abs(originOffset) > viewportDiagonal + outerOffset)
+    // Reverse triangle inequality rejects fully invisible borders quickly.
+    // Work is bounded by the viewport even for enormous off-screen circles.
+    if (!std::isfinite(dOriginDistance) ||
+        std::abs(dOriginOffset) > dViewportDiagonal + dOuterOffset)
     {
         return;
     }
 
-    const bool distantCenter = originDistance > 2.0 * viewportDiagonal;
-    const double unitX = distantCenter ? circle.centerX / originDistance : 0.0;
-    const double unitY = distantCenter ? circle.centerY / originDistance : 0.0;
+    const bool bDistantCenter = dOriginDistance > 2.0 * dViewportDiagonal;
+    const double dUnitX = bDistantCenter ? circle.dCenterX / dOriginDistance : 0.0;
+    const double dUnitY = bDistantCenter ? circle.dCenterY / dOriginDistance : 0.0;
 
-    for (int y = 0; y < height; ++y)
+    for (std::size_t j = 0; j < static_cast<std::size_t>(nHeight); ++j)
     {
-        auto* row = pixels + static_cast<std::size_t>(y) * width;
-        for (int x = 0; x < width; ++x)
+        for (std::size_t i = 0; i < static_cast<std::size_t>(nWidth); ++i)
         {
-            const double distance = std::hypot(
-                x - circle.centerX, y - circle.centerY);
-            double radialOffset = distance - circle.radius;
-            if (distantCenter)
+            const double dX = static_cast<double>(i);
+            const double dY = static_cast<double>(j);
+            const double dDist = std::hypot(dX - circle.dCenterX, dY - circle.dCenterY);
+            double dRadialOffset = dDist - circle.dRadius;
+            if (bDistantCenter)
             {
-                // For huge circles, distance - radius can lose the entire
-                // pixel offset. Rationalize distance - originDistance:
-                // (x*x + y*y - 2*cx*x - 2*cy*y) / (distance + originDistance).
-                // Dividing numerator and denominator by originDistance also
-                // avoids squaring huge centers or overflowing their sum.
-                const double numerator =
-                    (x / originDistance) * x + (y / originDistance) * y -
-                    2.0 * unitX * x - 2.0 * unitY * y;
-                radialOffset = originOffset +
-                    numerator / (distance / originDistance + 1.0);
+                // Rationalize distance - originDistance to preserve pixel
+                // offsets for huge circles. Divide by originDistance first
+                // to avoid squaring enormous centers or overflowing their sum.
+                const double dNumerator =
+                    (dX / dOriginDistance) * dX + (dY / dOriginDistance) * dY -
+                    2.0 * dUnitX * dX - 2.0 * dUnitY * dY;
+                dRadialOffset = dOriginOffset +
+                    dNumerator / (dDist / dOriginDistance + 1.0);
             }
 
-            // Pixel centers in this annulus form the requested border.
-            if (radialOffset >= innerOffset && radialOffset <= outerOffset)
+            if (dRadialOffset >= dInnerOffset && dRadialOffset <= dOuterOffset)
             {
-                row[x] = color;
+                fm[j * nPitch + i] = static_cast<unsigned char>(nGray);
             }
         }
     }

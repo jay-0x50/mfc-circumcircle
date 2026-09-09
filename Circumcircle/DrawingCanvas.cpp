@@ -15,174 +15,192 @@ END_MESSAGE_MAP()
 void CDrawingCanvas::OnPaint()
 {
     CPaintDC dc(this);
-    CRect area;
-    GetClientRect(&area);
-    const int width = area.Width();
-    const int height = area.Height();
-    if (width <= 0 || height <= 0)
+    CRect rect;
+    GetClientRect(&rect);
+    const int nWidth = rect.Width();
+    const int nHeight = rect.Height();
+    const int nBpp = 8;
+    if (nWidth <= 0 || nHeight <= 0)
         return;
 
-    // Compose all pixels in memory, then present the completed frame once.
-    m_pixels.assign(static_cast<size_t>(width) * height, 0x00FFFFFF);
-    for (int i = 0; i < m_pointCount; ++i)
-        geometry::DrawFilledPointCircle(m_pixels.data(), width, height,
-            m_points[i], m_pointRadius, 0x00000000);
-    if (m_hasCircumcircle)
-        geometry::DrawCircleRaster(m_pixels.data(), width, height,
-            m_circle, m_circleThickness, 0x00000000);
+    const int nPitch = InitImage(nWidth, nHeight);
+    unsigned char* fm = m_image.data();
+    const int nGray = 0;
+    for (int i = 0; i < m_nDataCount; ++i)
+        geometry::drawCircle(fm, nWidth, nHeight, nPitch,
+            m_ptData[i], m_nRadius, nGray);
+    if (m_bHasCircumcircle)
+        geometry::drawCircleOutline(fm, nWidth, nHeight, nPitch,
+            m_circle, m_nThickness, nGray);
 
-    BITMAPINFO info{};
+    struct GrayBitmapInfo
+    {
+        BITMAPINFOHEADER bmiHeader;
+        RGBQUAD rgb[256];
+    } info{};
     info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-    info.bmiHeader.biWidth = width;
-    info.bmiHeader.biHeight = -height;
+    info.bmiHeader.biWidth = nWidth;
+    info.bmiHeader.biHeight = -nHeight;
     info.bmiHeader.biPlanes = 1;
-    info.bmiHeader.biBitCount = 32;
+    info.bmiHeader.biBitCount = nBpp;
     info.bmiHeader.biCompression = BI_RGB;
-    ::SetDIBitsToDevice(dc.GetSafeHdc(), 0, 0, width, height, 0, 0,
-        0, height, m_pixels.data(), &info, DIB_RGB_COLORS);
+    info.bmiHeader.biClrUsed = 256;
+    for (int i = 0; i < 256; ++i)
+        info.rgb[i].rgbRed = info.rgb[i].rgbGreen = info.rgb[i].rgbBlue = static_cast<BYTE>(i);
+    // The completed image is copied once; its circle pixels were calculated above.
+    ::SetDIBitsToDevice(dc.GetSafeHdc(), 0, 0, nWidth, nHeight, 0, 0,
+        0, nHeight, fm, reinterpret_cast<const BITMAPINFO*>(&info), DIB_RGB_COLORS);
+}
+
+int CDrawingCanvas::InitImage(int nWidth, int nHeight)
+{
+    // Like an 8-bit DIB, each row includes padding up to a four-byte boundary.
+    const int nPitch = (nWidth + 3) & ~3;
+    m_image.assign(static_cast<size_t>(nPitch) * nHeight, 0xff);
+    return nPitch;
 }
 
 BOOL CDrawingCanvas::OnEraseBkgnd(CDC*) { return TRUE; }
 
-bool CDrawingCanvas::IsInsideDrawingArea(const CPoint& point) const
+BOOL CDrawingCanvas::validImgPos(int x, int y) const
 {
-    CRect area;
-    GetClientRect(&area);
-    return area.PtInRect(point) != FALSE;
+    CRect rect;
+    GetClientRect(&rect);
+    return rect.PtInRect(CPoint(x, y));
 }
 
-int CDrawingCanvas::HitTestPoint(const CPoint& point) const
+int CDrawingCanvas::hitTestPoint(const CPoint& point) const
 {
-    int nearest = -1;
-    double nearestDistance = static_cast<double>(m_pointRadius) * m_pointRadius + 1;
-    for (int i = 0; i < m_pointCount; ++i)
+    int nIndex = -1;
+    double dMinDist = static_cast<double>(m_nRadius) * m_nRadius + 1;
+    for (int i = 0; i < m_nDataCount; ++i)
     {
-        const double dx = static_cast<double>(point.x) - m_points[i].x;
-        const double dy = static_cast<double>(point.y) - m_points[i].y;
-        const double distance = dx * dx + dy * dy;
-        if (distance < nearestDistance)
+        const double dX = static_cast<double>(point.x) - m_ptData[i].x;
+        const double dY = static_cast<double>(point.y) - m_ptData[i].y;
+        const double dDist = dX * dX + dY * dY;
+        if (dDist < dMinDist)
         {
-            nearestDistance = distance;
-            nearest = i;
+            dMinDist = dDist;
+            nIndex = i;
         }
     }
-    return nearest;
+    return nIndex;
 }
 
 void CDrawingCanvas::OnLButtonDown(UINT, CPoint point)
 {
-    if (!IsInsideDrawingArea(point))
+    if (!validImgPos(point.x, point.y))
         return;
-    const int hit = HitTestPoint(point);
-    if (hit < 0 && m_pointCount == 3)
+    const int nIndex = hitTestPoint(point);
+    if (nIndex < 0 && m_nDataCount == 3)
         return;
     if (onBeginInteraction)
         onBeginInteraction();
     SetFocus();
-    if (hit >= 0)
+    if (nIndex >= 0)
     {
-        m_dragPointIndex = hit;
-        m_dragOffset = point - CPoint(m_points[hit].x, m_points[hit].y);
+        m_nDragIndex = nIndex;
+        m_ptDragOffset = point - CPoint(m_ptData[nIndex].x, m_ptData[nIndex].y);
         SetCapture();
     }
     else
     {
-        m_points[m_pointCount++] = {static_cast<int>(point.x), static_cast<int>(point.y)};
-        RecalculateAndRedraw();
+        m_ptData[m_nDataCount++] = {static_cast<int>(point.x), static_cast<int>(point.y)};
+        UpdateDisplay();
     }
 }
 
-void CDrawingCanvas::OnLButtonDblClk(UINT flags, CPoint point)
+void CDrawingCanvas::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-    OnLButtonDown(flags, point);
+    OnLButtonDown(nFlags, point);
 }
 
-void CDrawingCanvas::MoveDragPoint(CPoint point)
+void CDrawingCanvas::moveDragPoint(CPoint point)
 {
-    if (m_dragPointIndex < 0)
+    if (m_nDragIndex < 0)
         return;
-    CRect area;
-    GetClientRect(&area);
-    if (area.IsRectEmpty())
+    CRect rect;
+    GetClientRect(&rect);
+    if (rect.IsRectEmpty())
         return;
-    point -= m_dragOffset;
-    m_points[m_dragPointIndex] = {
-        static_cast<int>(std::clamp(point.x, 0L, area.right - 1)),
-        static_cast<int>(std::clamp(point.y, 0L, area.bottom - 1))};
-    RecalculateAndRedraw();
+    point -= m_ptDragOffset;
+    m_ptData[m_nDragIndex] = {
+        static_cast<int>(std::clamp(point.x, 0L, rect.right - 1)),
+        static_cast<int>(std::clamp(point.y, 0L, rect.bottom - 1))};
+    UpdateDisplay();
 }
 
-void CDrawingCanvas::OnMouseMove(UINT flags, CPoint point)
+void CDrawingCanvas::OnMouseMove(UINT nFlags, CPoint point)
 {
-    if (m_dragPointIndex < 0)
+    if (m_nDragIndex < 0)
         return;
-    if ((flags & MK_LBUTTON) == 0)
-        EndDrag();
+    if ((nFlags & MK_LBUTTON) == 0)
+        endDrag();
     else
-        MoveDragPoint(point);
+        moveDragPoint(point);
 }
 
 void CDrawingCanvas::OnLButtonUp(UINT, CPoint point)
 {
-    MoveDragPoint(point);
-    EndDrag();
+    moveDragPoint(point);
+    endDrag();
 }
 
-void CDrawingCanvas::EndDrag()
+void CDrawingCanvas::endDrag()
 {
-    m_dragPointIndex = -1;
-    m_dragOffset = CPoint(0, 0);
+    m_nDragIndex = -1;
+    m_ptDragOffset = CPoint(0, 0);
     if (::GetCapture() == GetSafeHwnd())
         ::ReleaseCapture();
 }
 
-void CDrawingCanvas::OnCaptureChanged(CWnd* window)
+void CDrawingCanvas::OnCaptureChanged(CWnd* pWnd)
 {
-    m_dragPointIndex = -1;
-    m_dragOffset = CPoint(0, 0);
-    CStatic::OnCaptureChanged(window);
+    m_nDragIndex = -1;
+    m_ptDragOffset = CPoint(0, 0);
+    CStatic::OnCaptureChanged(pWnd);
 }
 
 void CDrawingCanvas::OnCancelMode()
 {
-    EndDrag();
+    endDrag();
     CStatic::OnCancelMode();
 }
 
-void CDrawingCanvas::RecalculateAndRedraw()
+void CDrawingCanvas::UpdateDisplay()
 {
     m_circle = {};
-    m_hasCircumcircle = m_pointCount == 3 && geometry::CalculateCircumcircle(
-        m_points[0], m_points[1], m_points[2], m_circle);
+    m_bHasCircumcircle = m_nDataCount == 3 && geometry::calculateCircumcircle(
+        m_ptData[0], m_ptData[1], m_ptData[2], m_circle);
     if (onChanged)
         onChanged();
     // RDW_UPDATENOW also repaints during each captured mouse move.
     RedrawWindow(nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW | RDW_NOERASE);
 }
 
-void CDrawingCanvas::SetPointRadius(int radius)
+void CDrawingCanvas::SetPointRadius(int nRadius)
 {
-    m_pointRadius = radius;
+    m_nRadius = nRadius;
     Invalidate(FALSE);
 }
 
-void CDrawingCanvas::SetCircleThickness(int thickness)
+void CDrawingCanvas::SetCircleThickness(int nThickness)
 {
-    m_circleThickness = thickness;
+    m_nThickness = nThickness;
     Invalidate(FALSE);
 }
 
 void CDrawingCanvas::SetPoints(const std::array<geometry::Point, 3>& points)
 {
-    m_points = points;
-    m_pointCount = 3;
-    RecalculateAndRedraw();
+    m_ptData = points;
+    m_nDataCount = 3;
+    UpdateDisplay();
 }
 
 void CDrawingCanvas::ResetAll()
 {
-    EndDrag();
-    m_points = {};
-    m_pointCount = 0;
-    RecalculateAndRedraw();
+    endDrag();
+    m_ptData = {};
+    m_nDataCount = 0;
+    UpdateDisplay();
 }
