@@ -1,0 +1,417 @@
+{
+  "configuration": "Release",
+  "executable": "D:\\Project\\과제\\bin\\x64\\Release\\Circumcircle.exe",
+  "started_utc": "2026-09-08T23:44:40.914073+00:00",
+  "method": "ctypes Win32 messages against the real MFC process; hidden launch",
+  "offscreen_paint_enabled": true,
+  "message_timeout_ms": 100,
+  "checks": [
+    {
+      "name": "initial_controls",
+      "passed": true,
+      "elapsed_seconds": 0.0013,
+      "details": {
+        "canvas_size": [
+          941,
+          637
+        ],
+        "status": "영역 안을 클릭해 점 3개를 만드세요. 기존 점을 드래그할 수 있습니다."
+      }
+    },
+    {
+      "name": "click_and_drag",
+      "passed": true,
+      "elapsed_seconds": 0.0548,
+      "details": {
+        "click_points": [
+          [
+            188,
+            212
+          ],
+          [
+            470,
+            127
+          ],
+          [
+            705,
+            477
+          ]
+        ],
+        "live_drag_positions": [
+          [
+            235,
+            318
+          ],
+          [
+            313,
+            382
+          ]
+        ],
+        "circle_states": [
+          {
+            "center": [
+              405.73,
+              424.05
+            ],
+            "radius": 303.92
+          },
+          {
+            "center": [
+              477.27,
+              376.01
+            ],
+            "radius": 249.12
+          },
+          {
+            "center": [
+              530.65,
+              340.17
+            ],
+            "radius": 221.63
+          }
+        ],
+        "status": "세 점을 지나는 외접원입니다. 점을 드래그하면 즉시 다시 계산합니다."
+      }
+    },
+    {
+      "name": "input_isolation_and_capture",
+      "passed": true,
+      "elapsed_seconds": 0.0704,
+      "details": {
+        "clamped_drag_point": [
+          0,
+          636
+        ]
+      }
+    },
+    {
+      "name": "collinear_points",
+      "passed": true,
+      "elapsed_seconds": 0.0206,
+      "details": {
+        "points": [
+          [
+            188,
+            318
+          ],
+          [
+            470,
+            318
+          ],
+          [
+            752,
+            318
+          ]
+        ],
+        "status": "세 점이 겹치거나 거의 일직선입니다. 점을 드래그해 위치를 바꾸세요."
+      }
+    },
+    {
+      "name": "numeric_validation",
+      "passed": true,
+      "elapsed_seconds": 0.2244,
+      "details": {
+        "invalid_inputs": [
+          {
+            "control": 1001,
+            "input": "0",
+            "displayed": "9",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1001,
+            "input": "-5",
+            "displayed": "9",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1001,
+            "input": "999999999999999",
+            "displayed": "9",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1001,
+            "input": "",
+            "displayed": "9",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1001,
+            "input": "abc",
+            "displayed": "9",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1001,
+            "input": "2.5",
+            "displayed": "9",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1002,
+            "input": "0",
+            "displayed": "4",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1002,
+            "input": "-5",
+            "displayed": "4",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1002,
+            "input": "999999999999999",
+            "displayed": "4",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1002,
+            "input": "",
+            "displayed": "4",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1002,
+            "input": "abc",
+            "displayed": "4",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          },
+          {
+            "control": 1002,
+            "input": "2.5",
+            "displayed": "4",
+            "status": "빈 공간은 최대 3점까지 입력됩니다. 검은 점을 잡고 드래그하세요."
+          }
+        ]
+      }
+    },
+    {
+      "name": "random_ten_steps",
+      "passed": true,
+      "elapsed_seconds": 5.7831,
+      "details": {
+        "events": [
+          {
+            "step": 1,
+            "elapsed_seconds": 0.5206,
+            "points": [
+              [
+                397,
+                266
+              ],
+              [
+                410,
+                352
+              ],
+              [
+                319,
+                471
+              ]
+            ]
+          },
+          {
+            "step": 2,
+            "elapsed_seconds": 1.0172,
+            "points": [
+              [
+                864,
+                73
+              ],
+              [
+                565,
+                413
+              ],
+              [
+                853,
+                408
+              ]
+            ]
+          },
+          {
+            "step": 3,
+            "elapsed_seconds": 1.5159,
+            "points": [
+              [
+                284,
+                225
+              ],
+              [
+                212,
+                541
+              ],
+              [
+                665,
+                134
+              ]
+            ]
+          },
+          {
+            "step": 4,
+            "elapsed_seconds": 2.0146,
+            "points": [
+              [
+                895,
+                229
+              ],
+              [
+                389,
+                367
+              ],
+              [
+                232,
+                624
+              ]
+            ]
+          },
+          {
+            "step": 5,
+            "elapsed_seconds": 2.513,
+            "points": [
+              [
+                271,
+                402
+              ],
+              [
+                264,
+                557
+              ],
+              [
+                219,
+                54
+              ]
+            ]
+          },
+          {
+            "step": 6,
+            "elapsed_seconds": 3.0111,
+            "points": [
+              [
+                641,
+                364
+              ],
+              [
+                629,
+                597
+              ],
+              [
+                159,
+                331
+              ]
+            ]
+          },
+          {
+            "step": 7,
+            "elapsed_seconds": 3.5087,
+            "points": [
+              [
+                676,
+                160
+              ],
+              [
+                698,
+                108
+              ],
+              [
+                134,
+                587
+              ]
+            ]
+          },
+          {
+            "step": 8,
+            "elapsed_seconds": 4.0241,
+            "points": [
+              [
+                435,
+                103
+              ],
+              [
+                275,
+                476
+              ],
+              [
+                188,
+                512
+              ]
+            ]
+          },
+          {
+            "step": 9,
+            "elapsed_seconds": 4.5176,
+            "points": [
+              [
+                368,
+                421
+              ],
+              [
+                102,
+                301
+              ],
+              [
+                638,
+                404
+              ]
+            ]
+          },
+          {
+            "step": 10,
+            "elapsed_seconds": 5.0128,
+            "points": [
+              [
+                263,
+                155
+              ],
+              [
+                650,
+                509
+              ],
+              [
+                486,
+                146
+              ]
+            ]
+          }
+        ],
+        "interval_seconds": [
+          0.5206,
+          0.4966,
+          0.4987,
+          0.4987,
+          0.4984,
+          0.4981,
+          0.4976,
+          0.5154,
+          0.4935,
+          0.4952
+        ],
+        "responsiveness_samples": 243,
+        "maximum_wm_null_ms": 4.71,
+        "extra_step_observation_seconds": 0.7
+      }
+    },
+    {
+      "name": "reset_during_random",
+      "passed": true,
+      "elapsed_seconds": 1.9294,
+      "details": {
+        "reset_elapsed_ms": 5.001,
+        "stale_update_observation_seconds": 0.8,
+        "restart_verified": true
+      }
+    },
+    {
+      "name": "close_during_random",
+      "passed": true,
+      "elapsed_seconds": 0.6349,
+      "details": {
+        "exit_code": 2,
+        "idle_exit_code": 2,
+        "close_elapsed_ms": 14.46
+      }
+    }
+  ],
+  "passed": true,
+  "elapsed_seconds": 8.7737
+}

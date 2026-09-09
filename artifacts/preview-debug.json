@@ -1,0 +1,317 @@
+{
+  "hidden_launch": true,
+  "offscreen": true,
+  "configuration": "Debug",
+  "captures": [
+    {
+      "method": "printwindow",
+      "api_succeeded": true,
+      "png": "D:\\Project\\과제\\artifacts\\preview-debug-printwindow.png",
+      "image_size": [
+        1276,
+        842
+      ],
+      "canvas_origin": [
+        31,
+        149
+      ],
+      "canvas_size": [
+        941,
+        637
+      ],
+      "point_center_rgb": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "canvas_dark_pixels": 3143,
+      "canvas_white_pixels": 596274,
+      "canvas_sampled_pixels": 599417,
+      "canvas_unpainted_sentinel_pixels": 0,
+      "all_point_centers_rendered": true,
+      "note": "Offscreen capture contains the white canvas and all three black point centers; inspect the PNG for layout and circle rendering.",
+      "state": "ordinary_triangle",
+      "points": [
+        [
+          188,
+          212
+        ],
+        [
+          470,
+          127
+        ],
+        [
+          705,
+          477
+        ]
+      ],
+      "circle": {
+        "center": [
+          405.73,
+          424.05
+        ],
+        "radius": 303.92
+      }
+    },
+    {
+      "method": "wm-print",
+      "api_succeeded": true,
+      "png": "D:\\Project\\과제\\artifacts\\preview-debug-wm-print.png",
+      "image_size": [
+        1276,
+        842
+      ],
+      "canvas_origin": [
+        31,
+        149
+      ],
+      "canvas_size": [
+        941,
+        637
+      ],
+      "point_center_rgb": [
+        [
+          255,
+          0,
+          255
+        ],
+        [
+          255,
+          0,
+          255
+        ],
+        [
+          255,
+          0,
+          255
+        ]
+      ],
+      "canvas_dark_pixels": 0,
+      "canvas_white_pixels": 0,
+      "canvas_sampled_pixels": 599417,
+      "canvas_unpainted_sentinel_pixels": 599417,
+      "all_point_centers_rendered": false,
+      "note": "This capture method did not reproduce the custom canvas and cannot verify its pixels.",
+      "state": "ordinary_triangle",
+      "points": [
+        [
+          188,
+          212
+        ],
+        [
+          470,
+          127
+        ],
+        [
+          705,
+          477
+        ]
+      ],
+      "circle": {
+        "center": [
+          405.73,
+          424.05
+        ],
+        "radius": 303.92
+      }
+    },
+    {
+      "method": "printwindow",
+      "api_succeeded": true,
+      "png": "D:\\Project\\과제\\artifacts\\preview-debug-live-drag.png",
+      "image_size": [
+        1276,
+        842
+      ],
+      "canvas_origin": [
+        31,
+        149
+      ],
+      "canvas_size": [
+        941,
+        637
+      ],
+      "point_center_rgb": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "canvas_dark_pixels": 3045,
+      "canvas_white_pixels": 596372,
+      "canvas_sampled_pixels": 599417,
+      "canvas_unpainted_sentinel_pixels": 0,
+      "all_point_centers_rendered": true,
+      "note": "Offscreen capture contains the white canvas and all three black point centers; inspect the PNG for layout and circle rendering.",
+      "state": "live_drag_before_mouse_up",
+      "points": [
+        [
+          313,
+          318
+        ],
+        [
+          470,
+          127
+        ],
+        [
+          705,
+          477
+        ]
+      ],
+      "circle": {
+        "center": [
+          532.85,
+          338.69
+        ],
+        "radius": 220.83
+      }
+    },
+    {
+      "method": "printwindow",
+      "api_succeeded": true,
+      "png": "D:\\Project\\과제\\artifacts\\preview-debug-outside-center.png",
+      "image_size": [
+        1276,
+        842
+      ],
+      "canvas_origin": [
+        31,
+        149
+      ],
+      "canvas_size": [
+        941,
+        637
+      ],
+      "point_center_rgb": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "canvas_dark_pixels": 726,
+      "canvas_white_pixels": 598691,
+      "canvas_sampled_pixels": 599417,
+      "canvas_unpainted_sentinel_pixels": 0,
+      "all_point_centers_rendered": true,
+      "note": "Offscreen capture contains the white canvas and all three black point centers; inspect the PNG for layout and circle rendering.",
+      "state": "large_circle_center_outside_canvas",
+      "points": [
+        [
+          10,
+          10
+        ],
+        [
+          110,
+          10
+        ],
+        [
+          60,
+          11
+        ]
+      ],
+      "circle": {
+        "center": [
+          60.0,
+          -1239.5
+        ],
+        "radius": 1250.5
+      }
+    },
+    {
+      "method": "printwindow",
+      "api_succeeded": true,
+      "png": "D:\\Project\\과제\\artifacts\\preview-debug-thickness32.png",
+      "image_size": [
+        1276,
+        842
+      ],
+      "canvas_origin": [
+        31,
+        149
+      ],
+      "canvas_size": [
+        941,
+        637
+      ],
+      "point_center_rgb": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "canvas_dark_pixels": 45606,
+      "canvas_white_pixels": 553811,
+      "canvas_sampled_pixels": 599417,
+      "canvas_unpainted_sentinel_pixels": 0,
+      "all_point_centers_rendered": true,
+      "note": "Offscreen capture contains the white canvas and all three black point centers; inspect the PNG for layout and circle rendering.",
+      "state": "ordinary_triangle_thickness_32",
+      "points": [
+        [
+          188,
+          212
+        ],
+        [
+          470,
+          127
+        ],
+        [
+          705,
+          477
+        ]
+      ],
+      "circle": {
+        "center": [
+          405.73,
+          424.05
+        ],
+        "radius": 303.92
+      }
+    }
+  ]
+}

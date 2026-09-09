@@ -1,0 +1,77 @@
+빌드 시작: 2026-09-09 오전 8:40:04
+
+로깅의 세부 정보 표시가 Normal(으)로 설정되었습니다.
+
+     1>1 노드의 "D:\Project\과제\Circumcircle.sln" 프로젝트(Build 대상)입니다.
+
+     1>ValidateSolutionConfiguration:
+
+         솔루션 구성 "Debug|x64"을(를) 빌드하고 있습니다.
+
+     1>"D:\Project\과제\Circumcircle.sln"(1) 프로젝트가 1 노드에서 "D:\Project\과제\Circumcircle\Circumcircle.vcxproj"(2)을(를) 빌드하고 있습니다(기본 대상).
+
+     2>PrepareForBuild:
+
+         구조적 출력을 사용할 수 있습니다. 컴파일러 진단의 서식은 오류 계층 구조를 반영합니다. 자세한 내용은 https://aka.ms/cpp/structured-output을 참조하세요.
+
+       InitializeBuildStatus:
+
+         "D:\Project\과제\Circumcircle\..\obj\x64\Debug\Circumcircle.tlog\unsuccessfulbuild"에 연결(touching)하고 있습니다.
+
+       ClCompile:
+
+         C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\bin\HostX86\x64\CL.exe /c /Zi /JMC /nologo /W4 /WX- /diagnostics:column /sdl /Od /D _DEBUG /D WIN32 /D _WINDOWS /D UNICODE /D _UNICODE /D NOMINMAX /D WINVER=0x0A00 /D _WIN32_WINNT=0x0A00 /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /permissive- /Fo"D:\Project\과제\Circumcircle\..\obj\x64\Debug\\" /Fd"D:\Project\과제\Circumcircle\..\obj\x64\Debug\vc145.pdb" /external:W4 /Gd /TP /FC /errorReport:queue /utf-8 CircumcircleApp.cpp CircumcircleDlg.cpp DrawingCanvas.cpp CircleGeometry.cpp
+
+         CircumcircleApp.cpp
+
+         CircumcircleDlg.cpp
+
+         DrawingCanvas.cpp
+
+         CircleGeometry.cpp
+
+         코드를 생성하고 있습니다...
+
+       ResourceCompile:
+
+         C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"D:\Project\과제\Circumcircle\..\obj\x64\Debug\Circumcircle.res" Circumcircle.rc
+
+       Link:
+
+         C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\bin\HostX86\x64\link.exe /ERRORREPORT:QUEUE /OUT:"D:\Project\과제\Circumcircle\..\bin\x64\Debug\Circumcircle.exe" /INCREMENTAL /ILK:"D:\Project\과제\Circumcircle\..\obj\x64\Debug\Circumcircle.ilk" /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:app.manifest /manifestinput:"C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.51.36231\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"D:\Project\과제\Circumcircle\..\bin\x64\Debug\Circumcircle.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Project\과제\Circumcircle\..\bin\x64\Debug\Circumcircle.lib" /MACHINE:X64 "D:\Project\과제\Circumcircle\..\obj\x64\Debug\Circumcircle.res"
+
+         "D:\Project\과제\Circumcircle\..\obj\x64\Debug\CircumcircleApp.obj"
+
+         "D:\Project\과제\Circumcircle\..\obj\x64\Debug\CircumcircleDlg.obj"
+
+         "D:\Project\과제\Circumcircle\..\obj\x64\Debug\DrawingCanvas.obj"
+
+         "D:\Project\과제\Circumcircle\..\obj\x64\Debug\CircleGeometry.obj"
+
+         Circumcircle.vcxproj -> D:\Project\과제\bin\x64\Debug\Circumcircle.exe
+
+       FinalizeBuildStatus:
+
+         "D:\Project\과제\Circumcircle\..\obj\x64\Debug\Circumcircle.tlog\unsuccessfulbuild" 파일을 삭제하고 있습니다.
+
+         "D:\Project\과제\Circumcircle\..\obj\x64\Debug\Circumcircle.tlog\Circumcircle.lastbuildstate"에 연결(touching)하고 있습니다.
+
+     2>"D:\Project\과제\Circumcircle\Circumcircle.vcxproj" 프로젝트를 빌드했습니다(기본 대상).
+
+     1>"D:\Project\과제\Circumcircle.sln" 프로젝트를 빌드했습니다(Build 대상).
+
+
+
+빌드했습니다.
+
+    경고 0개
+
+    오류 0개
+
+
+
+D:\Project\과제\artifacts\build-Debug.log이(가) FileLogger에 작성됨
+
+
+
+경과 시간: 00:00:10.88
